@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FAQs — Larry's Used Cars</title>
+  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <style>
+
+    :root { --navy:#1B2A4A;--navy-dk:#0F1E35;--navy-md:#253558;--red:#C0392B;--red-lt:#D44333;--cream:#F7F3EC;--warm-wht:#EDE8DE;--tan:#C9BFA8; }
+    *,*::before,*::after{box-sizing:border-box;} html{scroll-behavior:smooth;}
+    body{font-family:'DM Sans',sans-serif;background-color:var(--cream);color:var(--navy);margin:0;overflow-x:hidden;}
+    body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;opacity:0.03;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");background-size:200px 200px;}
+    .site-nav{background-color:var(--navy-dk);border-bottom:3px solid var(--red);padding:12px 0;position:sticky;top:0;z-index:200;}
+    .navbar-brand-text{font-family:'Playfair Display',serif;font-weight:900;font-size:1.35rem;color:var(--cream)!important;}
+    .site-nav .nav-link{color:rgba(247,243,236,0.7)!important;font-size:0.82rem;letter-spacing:0.1em;text-transform:uppercase;font-weight:500;padding:4px 14px;transition:color 0.2s;}
+    .site-nav .nav-link:hover,.site-nav .nav-link.active{color:var(--cream)!important;}
+    .road-divider{width:100%;height:26px;background-color:var(--navy-md);position:relative;overflow:hidden;}
+    .road-divider::before{content:'';position:absolute;top:50%;left:0;width:100%;height:3px;background:repeating-linear-gradient(90deg,var(--cream) 0 40px,transparent 40px 80px);transform:translateY(-50%);opacity:0.4;}
+    .section-label{font-size:0.7rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--red);font-weight:500;margin-bottom:8px;}
+    .section-title{font-family:'Playfair Display',serif;font-size:clamp(1.7rem,4vw,2.5rem);font-weight:700;color:var(--navy);line-height:1.2;margin-bottom:36px;}
+    .section-title-light{color:var(--cream);}
+    .btn-primary-larry{background:var(--red);border:none;color:var(--cream);font-size:0.8rem;letter-spacing:0.14em;text-transform:uppercase;font-weight:500;padding:12px 28px;border-radius:2px;text-decoration:none;display:inline-block;transition:background 0.2s;}
+    .btn-primary-larry:hover{background:var(--red-lt);color:var(--cream);}
+    .site-footer{background-color:var(--navy-dk);border-top:3px solid var(--red);color:var(--tan);text-align:center;padding:32px 20px;font-size:0.83rem;}
+    .site-footer .footer-name{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--cream);margin-bottom:6px;}
+    .site-footer a{color:var(--red-lt);text-decoration:none;} .site-footer a:hover{color:var(--cream);}
+    .site-footer .footer-copy{margin:14px 0 0;color:rgba(201,191,168,0.45);font-size:0.74rem;}
+    .fade-up{opacity:0;transform:translateY(22px);transition:opacity 0.55s ease,transform 0.55s ease;}
+    .fade-up.visible{opacity:1;transform:none;}
+    .form-label{font-size:0.76rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--tan);font-weight:500;margin-bottom:5px;}
+    .form-control{background:rgba(247,243,236,0.06)!important;border:1px solid rgba(247,243,236,0.18)!important;border-radius:2px!important;color:var(--cream)!important;font-size:0.93rem;padding:10px 14px;}
+    .form-control:focus{border-color:var(--red-lt)!important;box-shadow:0 0 0 2px rgba(192,57,43,0.25)!important;background:rgba(247,243,236,0.1)!important;}
+    .form-control::placeholder{color:rgba(247,243,236,0.28)!important;}
+    textarea.form-control{resize:none;}
+    .page-hero{background-color:var(--navy-dk);padding:60px 20px 55px;text-align:center;position:relative;overflow:hidden;}
+    .page-hero::before{content:'';position:absolute;top:-60%;left:50%;transform:translateX(-50%);width:200%;height:200%;background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(192,57,43,0.04) 0deg 10deg,transparent 10deg 20deg);pointer-events:none;}
+    .page-hero h1{font-family:'Playfair Display',serif;font-weight:900;font-size:clamp(2.2rem,6vw,4rem);color:var(--cream);margin-bottom:10px;}
+    .page-hero p{color:rgba(247,243,236,0.6);font-size:0.95rem;margin:0;}
+    .breadcrumb-nav{font-size:0.75rem;letter-spacing:0.1em;color:rgba(201,191,168,0.55);margin-bottom:14px;}
+    .breadcrumb-nav a{color:var(--red-lt);text-decoration:none;}
+
+    .faq-section { padding: 72px 0; background-color: var(--cream); }
+    .faq-category { margin-bottom: 48px; }
+    .faq-cat-label { font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--red); font-weight: 500; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--tan); }
+    .faq-item { border-bottom: 1px solid var(--tan); }
+    .faq-q { width: 100%; background: none; border: none; text-align: left; padding: 18px 0; display: flex; justify-content: space-between; align-items: center; cursor: pointer; gap: 16px; }
+    .faq-q span { font-family: 'Playfair Display', serif; font-size: 1.02rem; font-weight: 700; color: var(--navy); line-height: 1.35; }
+    .faq-icon { color: var(--red); font-size: 0.8rem; flex-shrink: 0; transition: transform 0.25s; }
+    .faq-q.open .faq-icon { transform: rotate(180deg); }
+    .faq-a { display: none; padding: 0 0 18px; }
+    .faq-a.open { display: block; }
+    .faq-a p { font-size: 0.93rem; color: #374151; line-height: 1.75; margin: 0; }
+    .faq-cta { background-color: var(--navy); padding: 60px 0; text-align: center; }
+  </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-md site-nav"><div class="container"><a class="navbar-brand-text text-decoration-none" href="index.html">Larry's Used Cars</a><button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu"><span style="color:rgba(247,243,236,0.8);font-size:1.2rem;"><i class="fas fa-bars"></i></span></button><div class="collapse navbar-collapse" id="navMenu"><ul class="navbar-nav ms-auto"><li class="nav-item"><a class="nav-link" href="index.html">Home</a></li><li class="nav-item"><a class="nav-link" href="about.html">About Us</a></li><li class="nav-item"><a class="nav-link active" href="faq.html">FAQs</a></li><li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li></ul></div></div></nav>
+<div class="page-hero">
+  <div class="container position-relative">
+    <div class="breadcrumb-nav"><a href="index.html">Home</a> &nbsp;/&nbsp; FAQs</div>
+    <h1>Frequently Asked Questions</h1>
+    <p>Everything you'd want to know before you come in.</p>
+  </div>
+</div>
+<div class="road-divider"></div>
+
+<section class="faq-section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="faq-category fade-up" style="transition-delay:0.0s"><div class="faq-cat-label">Buying Process</div><div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            <span>Do I need an appointment to visit the lot?</span><i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-a"><p>Nope. Walk in anytime during business hours. We're open Mon–Sat 9 AM–6 PM and Sunday 10 AM–4 PM. Larry or someone on the team will be happy to show you around.</p></div>
+        </div><div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            <span>Can I test drive a car before buying?</span><i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-a"><p>Absolutely. We encourage it. You shouldn't buy a car without driving it first.</p></div>
+        </div><div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            <span>What paperwork do I need to buy a car?</span><i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-a"><p>Bring a valid driver's license and your chosen form of payment. If you're financing, we'll walk you through what's needed when you get here.</p></div>
+        </div><div class="faq-item">
+        </div></div><div class="faq-category fade-up" style="transition-delay:0.1s"><div class="faq-cat-label">Financing & Payment</div><div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            <span>Do you offer financing?</span><i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-a"><p>Yes. We work with buyers in a range of credit situations. Come in and we'll talk through your options — no pressure.</p></div>
+        </div><div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            <span>What payment methods do you accept?</span><i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-a"><p>Cash, check, creditcard, and financing. We'll let you know what works best for your situation.</p></div>
+        </div><div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            <span>Are there any hidden fees?</span><i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-a"><p>No. The price on the windshield is the price you pay. We don't believe in tacking on fees after the fact.</p></div>
+        </div><div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            <span>Can I get pre-approved before visiting?</span><i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-a"><p>We self-finance everything. You are pre-approved.</p></div>
+        </div></div><div class="faq-category fade-up" style="transition-delay:0.2s"><div class="faq-cat-label">General Information</div><div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            <span>How long has Larry's been open?</span><i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-a"><p>Since 1985. Over 40 years at the same location in Newport, DE.</p></div>
+        </div><div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            <span>Are your cars inspected?</span><i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-a"><p>Yes. Every vehicle on the lot has been inspected. If we wouldn't put a family member in it, it doesn't go on the lot.</p></div>
+        </div><div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)">
+            <span>What if I have a problem with a car I bought?</span><i class="fas fa-chevron-down faq-icon"></i>
+          </button>
+          <div class="faq-a"><p>All cars are sold as-is with no warranty. That's how we guarantee the lowest prices you can find.</p></div>
+        </div><div class="faq-item">
+        </div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="faq-cta">
+  <div class="container fade-up">
+    <p class="section-label" style="color:var(--red-lt)">Still have questions?</p>
+    <h2 class="section-title section-title-light" style="margin-bottom:24px;">Just give us a call.</h2>
+    <p style="color:rgba(247,243,236,0.6);font-size:0.95rem;margin-bottom:28px;">Larry or the team will pick up. No bots, no hold music — just a real person.</p>
+    <a href="tel:3029998172" class="btn-primary-larry"><i class="fas fa-phone" style="margin-right:8px;"></i>(302) 999-8172</a>
+    &nbsp;&nbsp;
+    <a href="contact.html" class="btn-outline-light" style="border:2px solid rgba(247,243,236,0.4);color:var(--cream);">Send a Message</a>
+  </div>
+</section>
+
+<footer class="site-footer"><div class="container"><div class="footer-name">Larry's Used Cars</div><p style="margin:4px 0;">228 W Newport Pike, Newport, DE 19804 &nbsp;·&nbsp; <a href="tel:3029998172">(302) 999-8172</a></p><p style="margin:4px 0;">Mon–Sat 9 AM–6 PM &nbsp;|&nbsp; Sun 10 AM–4 PM</p><div class="footer-copy">&copy; 2025 Larry's Used Cars. All rights reserved.</div></div></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+  </script>
+
+<script>
+  function toggleFaq(btn) {
+    const a = btn.nextElementSibling;
+    const isOpen = a.classList.contains('open');
+    document.querySelectorAll('.faq-a.open').forEach(el => el.classList.remove('open'));
+    document.querySelectorAll('.faq-q.open').forEach(el => el.classList.remove('open'));
+    if (!isOpen) { a.classList.add('open'); btn.classList.add('open'); }
+  }
+</script>
+</body>
+</html>
