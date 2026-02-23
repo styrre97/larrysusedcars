@@ -1,293 +1,663 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Larry's Used Cars - Reliable Pre-Owned Cars in Newport, DE</title>
-
-  <!-- Bootstrap -->
+  <title>Larry's Used Cars — Newport, DE</title>
+  
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 
-  <!-- Leaflet (FREE OpenStreetMap Map) -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  />
-
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <style>
+
+    :root {
+      --navy:     #1B2A4A;
+      --navy-dk:  #0F1E35;
+      --navy-md:  #253558;
+      --red:      #C0392B;
+      --red-lt:   #D44333;
+      --cream:    #F7F3EC;
+      --warm-wht: #EDE8DE;
+      --tan:      #C9BFA8;
+      --navy-txt: #1B2A4A;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f8f9fa;
-      color: #333;
+      font-family: 'DM Sans', sans-serif;
+      background-color: var(--cream);
+      color: var(--navy);
+      margin: 0;
+      overflow-x: hidden;
     }
-    .hero {
-      background: linear-gradient(135deg, #005a9c, #0080ff);
-      color: white;
-      padding: 60px 20px;
-      text-align: center;
+
+    /* Grain overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 999;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
     }
-    .card {
-      border: none;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      transition: transform 0.3s ease;
+
+    /* ── NAV ── */
+    .site-nav {
+      background-color: var(--navy-dk);
+      border-bottom: 3px solid var(--red);
+      padding: 12px 0;
+      position: sticky;
+      top: 0;
+      z-index: 200;
     }
-    .card:hover {
-      transform: translateY(-5px);
+    .navbar-brand-text {
+      font-family: 'Playfair Display', serif;
+      font-weight: 900;
+      font-size: 1.35rem;
+      color: var(--cream) !important;
     }
-    .review-card {
-      background: #fff;
-      border-left: 4px solid #0080ff;
-      padding: 15px;
-      margin-bottom: 15px;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    .site-nav .nav-link {
+      color: rgba(247,243,236,0.7) !important;
+      font-size: 0.82rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 500;
+      padding: 4px 14px;
+      transition: color 0.2s;
     }
-    .review-star {
-      color: #ffc107;
-    }
-    .contact-form {
-      background: #fff;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.1);
-    }
-    .btn-primary {
-      background-color: #005a9c;
-      border: none;
-      padding: 12px 30px;
-      font-weight: 600;
-    }
-    .btn-primary:hover {
-      background-color: #004a80;
-    }
-    footer {
-      background-color: #005a9c;
-      color: white;
-      text-align: center;
-      padding: 20px 0;
-      margin-top: 40px;
-    }
-    #map {
-      height: 300px;
+    .site-nav .nav-link:hover,
+    .site-nav .nav-link.active { color: var(--cream) !important; }
+
+    /* ── ROAD DIVIDER ── */
+    .road-divider {
       width: 100%;
-      border-radius: 12px;
-      margin-top: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      height: 26px;
+      background-color: var(--navy-md);
+      position: relative;
+      overflow: hidden;
     }
+    .road-divider::before {
+      content: '';
+      position: absolute;
+      top: 50%; left: 0;
+      width: 100%; height: 3px;
+      background: repeating-linear-gradient(90deg, var(--cream) 0 40px, transparent 40px 80px);
+      transform: translateY(-50%);
+      opacity: 0.4;
+    }
+
+    /* ── SECTION LABELS ── */
+    .section-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--red);
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.7rem, 4vw, 2.5rem);
+      font-weight: 700;
+      color: var(--navy);
+      line-height: 1.2;
+      margin-bottom: 36px;
+    }
+    .section-title-light { color: var(--cream); }
+
+    /* ── BUTTONS ── */
+    .btn-primary-larry {
+      background: var(--red);
+      border: none;
+      color: var(--cream);
+      font-size: 0.8rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      font-weight: 500;
+      padding: 12px 28px;
+      border-radius: 2px;
+      text-decoration: none;
+      display: inline-block;
+      transition: background 0.2s;
+    }
+    .btn-primary-larry:hover { background: var(--red-lt); color: var(--cream); }
+
+    .btn-outline-larry {
+      background: transparent;
+      border: 2px solid var(--red);
+      color: var(--red);
+      font-size: 0.8rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      font-weight: 500;
+      padding: 10px 26px;
+      border-radius: 2px;
+      text-decoration: none;
+      display: inline-block;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .btn-outline-larry:hover { background: var(--red); color: var(--cream); }
+
+    .btn-outline-light {
+      background: transparent;
+      border: 2px solid rgba(247,243,236,0.5);
+      color: var(--cream);
+      font-size: 0.8rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      font-weight: 500;
+      padding: 10px 26px;
+      border-radius: 2px;
+      text-decoration: none;
+      display: inline-block;
+      transition: all 0.2s;
+    }
+    .btn-outline-light:hover { border-color: var(--cream); color: var(--cream); }
+
+    /* ── FOOTER ── */
+    .site-footer {
+      background-color: var(--navy-dk);
+      border-top: 3px solid var(--red);
+      color: var(--tan);
+      text-align: center;
+      padding: 32px 20px;
+      font-size: 0.83rem;
+    }
+    .site-footer .footer-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      color: var(--cream);
+      margin-bottom: 6px;
+    }
+    .site-footer a { color: var(--red-lt); text-decoration: none; }
+    .site-footer a:hover { color: var(--cream); }
+    .site-footer .footer-copy { margin: 14px 0 0; color: rgba(201,191,168,0.45); font-size: 0.74rem; }
+
+    /* ── ANIMATIONS ── */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+    .fade-up.visible { opacity: 1; transform: none; }
+
+    /* ── FORMS ── */
+    .form-label {
+      font-size: 0.76rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--tan);
+      font-weight: 500;
+      margin-bottom: 5px;
+    }
+    .form-control {
+      background: rgba(247,243,236,0.06) !important;
+      border: 1px solid rgba(247,243,236,0.18) !important;
+      border-radius: 2px !important;
+      color: var(--cream) !important;
+      font-size: 0.93rem;
+      padding: 10px 14px;
+    }
+    .form-control:focus {
+      border-color: var(--red-lt) !important;
+      box-shadow: 0 0 0 2px rgba(192,57,43,0.25) !important;
+      background: rgba(247,243,236,0.1) !important;
+    }
+    .form-control::placeholder { color: rgba(247,243,236,0.28) !important; }
+    textarea.form-control { resize: none; }
+
+
+    /* ── HERO ── */
+    .hero {
+      background-color: var(--navy-dk);
+      position: relative;
+      overflow: hidden;
+      padding: 90px 20px 80px;
+      text-align: center;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -60%; left: 50%;
+      transform: translateX(-50%);
+      width: 200%; height: 200%;
+      background: repeating-conic-gradient(
+        from 0deg at 50% 50%,
+        rgba(192,57,43,0.05) 0deg 10deg,
+        transparent 10deg 20deg
+      );
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-block;
+      border: 1.5px solid rgba(192,57,43,0.6);
+      color: rgba(215,100,80,0.9);
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 5px 16px;
+      border-radius: 2px;
+      margin-bottom: 20px;
+      font-weight: 500;
+    }
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-weight: 900;
+      font-size: clamp(3.2rem, 9vw, 7rem);
+      color: var(--cream);
+      line-height: 1.0;
+      margin-bottom: 18px;
+    }
+    .hero h1 em { color: var(--red-lt); font-style: italic; }
+    .hero-sub {
+      color: rgba(247,243,236,0.65);
+      font-size: clamp(0.9rem, 2vw, 1.05rem);
+      font-weight: 300;
+      max-width: 420px;
+      margin: 0 auto 32px;
+      line-height: 1.65;
+    }
+    .hero-meta {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+      color: rgba(247,243,236,0.55);
+      font-size: 0.85rem;
+      margin-bottom: 36px;
+    }
+    .hero-meta span { display: flex; align-items: center; gap: 7px; }
+    .hero-meta i { color: var(--red-lt); }
+    .hero-links { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
+
+    /* ── WHY CARDS ── */
+    .why-section {
+      background-color: var(--warm-wht);
+      padding: 72px 0;
+      border-top: 1px solid var(--tan);
+      border-bottom: 1px solid var(--tan);
+    }
+    .why-card {
+      background: var(--cream);
+      border: 1px solid var(--tan);
+      border-top: 4px solid var(--red);
+      border-radius: 2px;
+      padding: 30px 26px;
+      height: 100%;
+      transition: box-shadow 0.25s, transform 0.25s;
+    }
+    .why-card:hover { transform: translateY(-4px); box-shadow: 0 14px 30px rgba(27,42,74,0.1); }
+    .why-card .icon-wrap {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--navy);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 16px;
+    }
+    .why-card .icon-wrap i { color: var(--cream); font-size: 1rem; }
+    .why-card h5 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem; font-weight: 700;
+      margin-bottom: 10px; color: var(--navy);
+    }
+    .why-card p { font-size: 0.9rem; color: #4a5568; line-height: 1.65; margin: 0; }
+
+    /* ── LARRY QUOTE STRIP ── */
+    .quote-strip {
+      background-color: var(--navy);
+      padding: 60px 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .quote-strip::after {
+      content: '';
+      position: absolute;
+      top: 0; right: 0;
+      width: 40%;
+      height: 100%;
+      background: linear-gradient(to left, rgba(15,30,53,0.5), transparent);
+      pointer-events: none;
+    }
+    .larry-photo-small {
+      width: 110px;
+      height: 110px;
+      display: block;
+      border-radius: 50%;
+      object-fit: cover;
+      object-position: center top;
+      border: 3px solid var(--red);
+      flex-shrink: 0;
+    }
+    .larry-quote {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.2rem, 2.5vw, 1.7rem);
+      color: var(--cream);
+      font-style: italic;
+      font-weight: 700;
+      line-height: 1.4;
+      margin-bottom: 12px;
+    }
+    .larry-cite {
+      font-size: 0.76rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(201,191,168,0.6);
+      font-style: normal;
+    }
+
+    /* ── REVIEWS ── */
+    .reviews-section { padding: 72px 0; background-color: var(--cream); }
+    .review-card {
+      background: var(--warm-wht);
+      border: 1px solid var(--tan);
+      border-left: 4px solid var(--red);
+      padding: 22px 22px 18px;
+      border-radius: 2px;
+      margin-bottom: 18px;
+      transition: box-shadow 0.2s;
+    }
+    .review-card:hover { box-shadow: 0 6px 18px rgba(27,42,74,0.09); }
+    .review-stars { color: #B8860B; font-size: 0.78rem; margin-bottom: 8px; }
+    .review-text { font-size: 0.9rem; color: var(--navy); line-height: 1.65; margin-bottom: 12px; }
+    .review-author { font-size: 0.76rem; letter-spacing: 0.08em; text-transform: uppercase; color: #4a5568; font-weight: 500; }
+    .review-date { font-size: 0.74rem; color: var(--tan); }
+
+    /* ── PAGE LINKS STRIP ── */
+    .page-strip { background-color: var(--navy-dk); padding: 60px 0; }
+    .page-card {
+      background: rgba(247,243,236,0.04);
+      border: 1px solid rgba(247,243,236,0.1);
+      border-top: 3px solid var(--red);
+      border-radius: 2px;
+      padding: 28px 24px;
+      text-align: center;
+      text-decoration: none;
+      display: block;
+      transition: background 0.2s, transform 0.2s;
+      height: 100%;
+    }
+    .page-card:hover { background: rgba(247,243,236,0.08); transform: translateY(-3px); }
+    .page-card i { font-size: 1.6rem; color: var(--red-lt); margin-bottom: 14px; display: block; }
+    .page-card h5 {
+      font-family: 'Playfair Display', serif;
+      color: var(--cream); font-size: 1rem; margin-bottom: 8px;
+    }
+    .page-card p { font-size: 0.83rem; color: rgba(201,191,168,0.7); margin: 0; line-height: 1.55; }
+
+    /* ── CONTACT FORM (on homepage) ── */
+    .contact-section { padding: 72px 0; background-color: var(--navy); }
+    .contact-form-wrap {
+      background: rgba(247,243,236,0.05);
+      border: 1px solid rgba(247,243,236,0.12);
+      border-radius: 2px;
+      padding: 38px;
+    }
+    #map { height: 320px; width: 100%; border-radius: 2px; border: 2px solid rgba(201,191,168,0.3); margin-top:10px; }
+    .hours-box {
+      background: rgba(247,243,236,0.05);
+      border: 1px solid rgba(247,243,236,0.12);
+      border-top: 3px solid rgba(120,160,200,0.5);
+      border-radius: 2px;
+      padding: 26px;
+    }
+    .hours-box h5 {
+      font-family: 'Playfair Display', serif;
+      color: var(--cream); font-size: 1rem; margin-bottom: 16px;
+    }
+    .hours-row {
+      display: flex; justify-content: space-between;
+      font-size: 0.86rem; padding: 7px 0;
+      border-bottom: 1px dashed rgba(201,191,168,0.25);
+      color: rgba(201,191,168,0.7);
+    }
+    .hours-row:last-child { border-bottom: none; }
+    .hours-row .day { color: var(--cream); font-weight: 500; }
   </style>
 </head>
 <body>
 
-  <!-- Hero Section -->
-  <section class="hero">
+  <nav class="navbar navbar-expand-md site-nav">
     <div class="container">
-      <h1 class="display-4 fw-bold">Larry's Used Cars</h1>
-      <p class="lead mb-4">Quality Pre-Owned Vehicles at Unbeatable Prices Since 1985</p>
-      <p><i class="fas fa-map-marker-alt"></i> 228 W Newport Pike, Newport, DE 19804</p>
-      <p><i class="fas fa-phone"></i> (302) 999-8172</p>
-    </div>
-  </section>
-
-  <!-- Why Choose Us -->
-  <section class="py-5 bg-light">
-    <div class="container">
-      <h2 class="text-center mb-5">Why Choose Larry's Used Cars?</h2>
-      <div class="row g-4">
-        <div class="col-md-6">
-          <div class="card p-4">
-            <i class="fas fa-calendar-check fa-2x text-primary mb-3"></i>
-            <h5 class="fw-bold">40+ Years of Experience</h5>
-            <p>Since 1985, we’ve helped first-time buyers, families, and repeat customers find reliable cars they can trust.</p>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="card p-4">
-            <i class="fas fa-handshake fa-2x text-success mb-3"></i>
-            <h5 class="fw-bold">Personal Service, No Pressure</h5>
-            <p>We treat every customer like family — no high-pressure sales, just honest service.</p>
-          </div>
-        </div>
+      <a class="navbar-brand-text text-decoration-none" href="index.html">Larry's Used Cars</a>
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+        <span style="color:rgba(247,243,236,0.8);font-size:1.2rem;"><i class="fas fa-bars"></i></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ms-auto"><li class="nav-item"><a class="nav-link active" href="index.html">Home</a></li><li class="nav-item"><a class="nav-link" href="about.html">About Us</a></li><li class="nav-item"><a class="nav-link" href="faq.html">FAQs</a></li><li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li></ul>
       </div>
     </div>
-  </section>
+  </nav>
 
-  <!-- Reviews Section -->
-  <section class="container py-5">
-  <h2 class="text-center mb-4">Customer Reviews</h2>
-
-  <div id="reviewsContainer" class="row">
-    <div class="col-12 text-center">
-      <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Loading reviews...</span>
-      </div>
+<!-- HERO -->
+<section class="hero">
+  <div class="container position-relative">
+    <div class="hero-badge">Newport, Delaware &nbsp;·&nbsp; Est. 1985</div>
+    <h1>Larry's<br><em>Used Cars</em></h1>
+    <p class="hero-sub">Good cars. Straight talk. The kind of lot families have trusted for 40 years.</p>
+    <div class="hero-meta">
+      <span><i class="fas fa-map-marker-alt"></i>228 W Newport Pike, Newport, DE</span>
+      <span><i class="fas fa-phone"></i>(302) 999-8172</span>
     </div>
-  </div>
-
-  <!-- View More Button -->
-  <div class="text-center mt-3">
-    <button id="viewMoreBtn" class="btn btn-primary" style="display:none;">
-      View More Reviews
-    </button>
+    <div class="hero-links">
+      <a href="contact.html" class="btn-primary-larry">Get in Touch</a>
+      <a href="about.html" class="btn-outline-light">Our Story</a>
+    </div>
   </div>
 </section>
 
-  <!-- Map Section -->
-  <section class="py-5 bg-light">
-    <div class="container">
-      <h2 class="text-center mb-4">Find Us on the Map</h2>
-      <div id="map"></div>
-    </div>
-  </section>
+<div class="road-divider"></div>
 
-  <!-- Contact Form -->
-  <section class="py-5">
-    <div class="container">
-      <h2 class="text-center mb-5">Contact Us</h2>
-      <div class="row justify-content-center">
-        <div class="col-md-8">
-          <form id="contactForm" action="https://formspree.io/f/mykdblel" method="POST">
-            <div class="mb-3">
-              <label for="name" class="form-label">Name</label>
-              <input type="text" class="form-control" id="name" name="name" required>
-            </div>
-            <div class="mb-3">
-              <label for="email" class="form-label">Email</label>
-              <input type="email" class="form-control" id="email" name="email" required>
-            </div>
-            <div class="mb-3">
-              <label for="message" class="form-label">Message</label>
-              <textarea class="form-control" id="message" name="message" rows="4" required></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary">Send Message</button>
-          </form>
+<!-- WHY LARRY'S -->
+<section class="why-section">
+  <div class="container">
+    <div class="text-center mb-5 fade-up">
+      <p class="section-label">Why Larry's</p>
+      <h2 class="section-title">We do things the old-fashioned way.</h2>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-6 col-lg-3 fade-up">
+        <div class="why-card">
+          <div class="icon-wrap"><i class="fas fa-calendar-check"></i></div>
+          <h5>40+ Years on the Lot</h5>
+          <p>Since 1985, we've been the go-to for Newport families looking for a reliable car at a fair price.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3 fade-up" style="transition-delay:0.1s">
+        <div class="why-card">
+          <div class="icon-wrap"><i class="fas fa-handshake"></i></div>
+          <h5>No Pressure. Ever.</h5>
+          <p>We treat every customer like family. Come in, take your time, ask anything. No rush.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3 fade-up" style="transition-delay:0.2s">
+        <div class="why-card">
+          <div class="icon-wrap"><i class="fas fa-car"></i></div>
+          <h5>Every Car Checked</h5>
+          <p>We won't put a car on this lot that we wouldn't put a family member in. Simple as that.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3 fade-up" style="transition-delay:0.3s">
+        <div class="why-card">
+          <div class="icon-wrap"><i class="fas fa-tag"></i></div>
+          <h5>What You See Is It</h5>
+          <p>No inflated stickers. No surprise fees. The price on the windshield is the price you pay.</p>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- Footer -->
-  <footer>
+<!-- LARRY QUOTE STRIP -->
+<section class="quote-strip">
+  <div class="container">
+    <div class="row align-items-center g-4 fade-up">
+      <div class="col-auto">
+        <img src="https://larrysusedcars.com/images/larry.jpg" width="110">
+      </div>
+      <div class="col">
+        <div class="larry-quote">"Good cars. Fair prices. That's all there is to it."</div>
+        <cite class="larry-cite">— Larry, Founder &amp; Owner &nbsp;·&nbsp; <a href="about.html" style="color:var(--red-lt);text-decoration:none;">Read his story &rarr;</a></cite>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="road-divider"></div>
+
+<!-- REVIEWS -->
+<section class="reviews-section">
+  <div class="container">
+    <div class="text-center mb-5 fade-up">
+      <p class="section-label">What Customers Say</p>
+      <h2 class="section-title">Don't take our word for it.</h2>
+    </div>
+    <div id="reviewsContainer" class="row">
+      <div class="col-12 text-center">
+        <div class="spinner-border" style="color:var(--red)" role="status"></div>
+      </div>
+    </div>
+    <div class="text-center mt-4">
+      <button id="viewMoreBtn" class="btn-outline-larry" style="display:none;">Load More Reviews</button>
+    </div>
+  </div>
+</section>
+
+<!-- EXPLORE PAGES STRIP -->
+<section class="page-strip">
+  <div class="container">
+    <div class="text-center mb-5 fade-up">
+      <p class="section-label" style="color:rgba(212,67,51,0.85)">Explore</p>
+      <h2 class="section-title section-title-light">Everything you need to know.</h2>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-4 fade-up">
+        <a href="about.html" class="page-card">
+          <i class="fas fa-user-tie"></i>
+          <h5>About Us</h5>
+          <p>Who we are, how Larry started the lot, and what we're all about.</p>
+        </a>
+      </div>
+      <div class="col-md-4 fade-up" style="transition-delay:0.1s">
+        <a href="faq.html" class="page-card">
+          <i class="fas fa-circle-question"></i>
+          <h5>FAQs</h5>
+          <p>Common questions about buying, financing, and what to expect on the lot.</p>
+        </a>
+      </div>
+      <div class="col-md-4 fade-up" style="transition-delay:0.2s">
+        <a href="contact.html" class="page-card">
+          <i class="fas fa-map-pin"></i>
+          <h5>Contact &amp; Directions</h5>
+          <p>Hours, phone, address, and a map to find us easily.</p>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT FORM + MAP -->
+<section class="contact-section" id="contact">
+  <div class="container">
+    <div class="text-center mb-5 fade-up">
+      <p class="section-label" style="color:var(--red-lt)">Get in Touch</p>
+      <h2 class="section-title section-title-light">Drop us a line.</h2>
+    </div>
+    <div class="row g-5">
+      <div class="col-lg-6 fade-up">
+        <div class="contact-form-wrap">
+          <form id="contactForm" action="https://formspree.io/f/mykdblel" method="POST">
+            <div class="mb-4">
+              <label class="form-label">Your Name</label>
+              <input type="text" class="form-control" name="name" placeholder="First &amp; last name" required>
+            </div>
+            <div class="mb-4">
+              <label class="form-label">Email Address</label>
+              <input type="email" class="form-control" name="email" placeholder="you@example.com" required>
+            </div>
+            <div class="mb-4">
+              <label class="form-label">Message</label>
+              <textarea class="form-control" name="message" rows="4" placeholder="Ask about a car, hours, anything..." required></textarea>
+            </div>
+            <button type="submit" class="btn-primary-larry">Send Message</button>
+          </form>
+        </div>
+      </div>
+      <div class="col-lg-6 fade-up" style="transition-delay:0.1s">
+        <div id="map" style="margin-bottom:16px;"></div>
+        <div class="hours-box">
+          <h5>Hours &amp; Location</h5>
+          <div class="hours-row"><span class="day">Mon – Fri</span><span>9 AM – 6 PM</span></div>
+          <div class="hours-row"><span class="day">Saturday</span><span>9 AM – 6 PM</span></div>
+          <div class="hours-row"><span class="day">Sunday</span><span>10 AM – 4 PM</span></div>
+          <div style="margin-top:18px;font-size:0.86rem;color:rgba(201,191,168,0.7);line-height:1.7;">
+            <p style="margin:0;"><i class="fas fa-map-marker-alt" style="color:var(--red-lt);margin-right:7px;"></i>228 W Newport Pike, Newport, DE 19804</p>
+            <p style="margin:6px 0 0;"><i class="fas fa-phone" style="color:var(--red-lt);margin-right:7px;"></i>(302) 999-8172</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+  <footer class="site-footer">
     <div class="container">
-      <p>&copy; 2025 Larry's Used Cars. All rights reserved.</p>
-      <p>Open: Mon–Sat 9 AM – 6 PM | Sun 10 AM – 4 PM</p>
+      <div class="footer-name">Larry's Used Cars</div>
+      <p style="margin:4px 0;">228 W Newport Pike, Newport, DE 19804 &nbsp;·&nbsp; <a href="tel:3029998172">(302) 999-8172</a></p>
+      <p style="margin:4px 0;">Mon–Sat 9 AM–6 PM &nbsp;|&nbsp; Sun 10 AM–4 PM</p>
+      <div class="footer-copy">&copy; 2025 Larry's Used Cars. All rights reserved.</div>
     </div>
   </footer>
 
-  <!-- Scripts -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-  <!-- Leaflet JS (Map Engine) -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
   <script>
-  let allReviews = [];
-  let reviewsShown = 0;
-  const REVIEWS_PER_LOAD = 4;
-
-  async function loadReviews() {
-    const reviewsContainer = document.getElementById('reviewsContainer');
-    const viewMoreBtn = document.getElementById('viewMoreBtn');
-    const url = 'https://raw.githubusercontent.com/styrre97/larrysusedcars/main/reviews.json';
-
-    try {
-      const response = await fetch(url);
-      if (!response.ok) throw new Error(`Failed to load reviews: ${response.status}`);
-
-      const data = await response.json();
-      allReviews = Array.isArray(data) ? data : [];
-
-      if (allReviews.length === 0) {
-        reviewsContainer.innerHTML = '<div class="col-12 text-center text-danger">No reviews available.</div>';
-        return;
-      }
-
-      reviewsContainer.innerHTML = '';
-      reviewsShown = 0;
-
-      // Show first batch
-      renderMoreReviews();
-
-      // Show button only if there are more reviews
-      if (allReviews.length > REVIEWS_PER_LOAD) {
-        viewMoreBtn.style.display = 'inline-block';
-      }
-
-      viewMoreBtn.addEventListener('click', renderMoreReviews);
-
-    } catch (err) {
-      console.error('Error loading reviews:', err);
-      reviewsContainer.innerHTML = `
-        <div class="col-12 text-center text-danger">
-          Failed to load reviews. Please check your GitHub file path.
-        </div>
-      `;
-    }
-  }
-
-  function renderMoreReviews() {
-    const reviewsContainer = document.getElementById('reviewsContainer');
-    const viewMoreBtn = document.getElementById('viewMoreBtn');
-
-    const nextBatch = allReviews.slice(reviewsShown, reviewsShown + REVIEWS_PER_LOAD);
-
-    nextBatch.forEach(review => {
-      const date = review.date ? new Date(review.date).toLocaleDateString() : '';
-      const rating = review.rating || 5;
-
-      const reviewCard = document.createElement('div');
-      reviewCard.className = 'col-md-6 mb-3';
-      reviewCard.innerHTML = `
-        <div class="review-card">
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <div class="d-flex align-items-center">
-              <i class="fas fa-star review-star"></i>
-              <span class="ms-1">${rating}</span>
-            </div>
-            <small class="text-muted">${date}</small>
-          </div>
-          <p class="mb-1">${review.text}</p>
-          <small class="text-muted">— ${review.name || 'Customer'}</small>
-        </div>
-      `;
-      reviewsContainer.appendChild(reviewCard);
-    });
-
-    reviewsShown += nextBatch.length;
-
-    // Hide button if all reviews are shown
-    if (reviewsShown >= allReviews.length) {
-      viewMoreBtn.style.display = 'none';
-    }
-  }
-
-    // === Initialize OpenStreetMap (FREE, no API key needed) ===
-    function initMap() {
-      // Larry's Used Cars coordinates (Newport, DE)
-      const lat = 39.6867;
-      const lng = -75.6096;
-
-      const map = L.map('map').setView([lat, lng], 15);
-
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
-      }).addTo(map);
-
-      L.marker([lat, lng])
-        .addTo(map)
-        .bindPopup("<b>Larry's Used Cars</b><br>228 W Newport Pike, Newport, DE")
-        .openPopup();
-    }
-
-    // === Page Load ===
-    window.addEventListener('load', function () {
-      loadReviews();
-      initMap();
-    });
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
   </script>
 
+<script>
+  let allReviews=[], reviewsShown=0;
+  const PER=4;
+  async function loadReviews(){
+    const c=document.getElementById('reviewsContainer'),b=document.getElementById('viewMoreBtn');
+    try{
+      const r=await fetch('https://raw.githubusercontent.com/styrre97/larrysusedcars/main/reviews.json');
+      if(!r.ok) throw new Error();
+      allReviews=await r.json();
+      if(!Array.isArray(allReviews)||!allReviews.length){c.innerHTML='<p class="text-center" style="color:#4a5568">No reviews yet.</p>';return;}
+      c.innerHTML=''; renderMore();
+      if(allReviews.length>PER) b.style.display='inline-block';
+      b.addEventListener('click',renderMore);
+    }catch{c.innerHTML='<p class="text-center" style="color:var(--red)">Could not load reviews.</p>';}
+  }
+  function renderMore(){
+    const c=document.getElementById('reviewsContainer'),b=document.getElementById('viewMoreBtn');
+    allReviews.slice(reviewsShown,reviewsShown+PER).forEach(r=>{
+      const d=r.date?new Date(r.date).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'}):'';
+      const s='★'.repeat(Math.min(5,r.rating||5));
+      const div=document.createElement('div'); div.className='col-md-6';
+      div.innerHTML=`<div class="review-card"><div class="review-stars">${s}</div><p class="review-text">${r.text}</p><div class="d-flex justify-content-between align-items-center"><span class="review-author">— ${r.name||'Happy Customer'}</span><span class="review-date">${d}</span></div></div>`;
+      c.appendChild(div);
+    });
+    reviewsShown+=PER; if(reviewsShown>=allReviews.length) b.style.display='none';
+  }
+  function initMap(){
+    const m=L.map('map').setView([39.6867,-75.6096],15);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; OpenStreetMap contributors'}).addTo(m);
+    const icon=L.divIcon({html:`<div style="background:#C0392B;width:14px;height:14px;border-radius:50%;border:3px solid #F7F3EC;box-shadow:0 2px 6px rgba(0,0,0,0.4)"></div>`,iconSize:[14,14],iconAnchor:[7,7]});
+    L.marker([39.6867,-75.6096],{icon}).addTo(m).bindPopup("<b style='font-family:serif'>Larry's Used Cars</b><br>228 W Newport Pike, Newport, DE").openPopup();
+  }
+  window.addEventListener('load',()=>{loadReviews();initMap();});
+</script>
 </body>
 </html>
